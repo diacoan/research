@@ -1,0 +1,60 @@
+cloudsql_context:
+  instance_identity:
+    project_id: ""
+    instance_name: ""
+    region: ""
+    edition: ""
+    availability_type: ""
+    machine_tier: ""
+    vcpu: 0
+    memory_gib: 0
+  storage:
+    disk_type: ""
+    disk_size_gib: 0
+    storage_auto_resize: false
+    backup_retention: ""
+    pitr_enabled: false
+  networking:
+    private_ip_enabled: false
+    psc_enabled: false
+    public_ip_enabled: false
+    authorized_networks: []
+  database_flags:
+    max_connections: ""
+    shared_buffers: ""
+    work_mem: ""
+    maintenance_work_mem: ""
+    other_flags: {}
+  query_insights:
+    enabled: false
+    max_query_length: ""
+    capture_application_tags: false
+  operational_profile:
+    maintenance_window: ""
+    observed_failover_behavior: ""
+    known_replication_or_lag_behavior: ""
+    known_quota_constraints: []
+  artifactory_connection_budget:
+    artifactory_primary_pools:
+      artifactory_max_open_connections: 0
+      access_max_open_connections: 0
+      metadata_max_open_connections: 0
+      mc_max_open_connections: 0
+      mc_idgenerator_max_open_connections: 0
+    expected_simultaneous_active_primaries: 0
+    reserved_headroom_for_non_artifactory_clients: ""
+  observed_signals:
+    num_backends_p95: ""
+    num_backends_peak: ""
+    cpu_utilization_p95: ""
+    cpu_utilization_peak: ""
+    memory_utilization_p95: ""
+    disk_utilization_peak: ""
+    lock_time_patterns: []
+    slow_query_patterns: []
+  ownership_and_change_rules:
+    dba_owner: ""
+    approval_rules_for_instance_resize: []
+    approval_rules_for_flag_change: []
+  open_questions:
+    - ""

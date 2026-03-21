@@ -1,0 +1,170 @@
+global:
+  jfrog:
+    observability:
+      branch: master
+  prometheus: 
+    release_name: prometheus
+unifiedUpgradeAllowed: true
+databaseUpgradeReady: true
+xray:
+  jfrogUrl: http://artifactory-artifactory.rt:8082
+  openMetrics:
+    enabled: true
+replicaCount: 1
+postgresql:
+  auth:
+    password: xray
+
+  ## If Xray DB sync is needed, increase the resources to the following values:
+  # primary:
+  #   resources:
+  #     requests:
+  #       memory: 2Gi
+  #       cpu: 1
+  #     limits:
+  #       memory: 16Gi
+  #       cpu: 6
+  #   extendedConfiguration: |
+  #     max_connections = 500
+  #     listen_addresses = '*'
+  #     max_wal_size = '4GB'
+
+rabbitmq-ha:
+  enabled: false
+rabbitmq:
+  enabled: true
+  auth:
+    username: guest
+    password: guest
+common:
+  preStartCommand: "export JF_OBSERVABILITY_METRICS_ENABLED=true"
+  customInitContainersBegin: |
+    - name: "download-fluentd-conf-on-persistent-volume"
+      image: {{ include "xray.getImageInfoByValue" (list . "initContainers") }}
+      imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+      command:
+        - 'sh'
+        - '-c'
+        - >
+          mkdir -p {{ .Values.xray.persistence.mountPath }}/etc/fluentd/;
+          curl https://raw.githubusercontent.com/jfrog/log-analytics-prometheus/{{ .Values.global.jfrog.observability.branch }}/fluent_metrics.conf.xray -o {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
+      volumeMounts:
+        - mountPath: "{{ .Values.xray.persistence.mountPath }}"
+          name: data-volume
+  customSidecarContainers: |
+    - name: "xray-platform-fluentd-sidecar"
+      image: "releases-docker.jfrog.io/fluentd:4.15"
+      imagePullPolicy: "IfNotPresent"
+      volumeMounts:
+        - mountPath: "{{ .Values.xray.persistence.mountPath }}"
+          name: data-volume
+      env:
+        - name: JF_PRODUCT_DATA_INTERNAL
+          value: {{ .Values.xray.persistence.mountPath }}
+        - name: FLUENTD_CONF
+          value: ../../../..{{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf
+        - name: LOKI_URL
+          value: http://loki.{{ .Release.Namespace }}.svc.cluster.local:3100
+## Allows to add additional kubernetes resources
+## Use --- as a separator between multiple resources
+## For an example, refer - https://github.com/jfrog/log-analytics-prometheus
+additionalResources: |
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: {{ template "xray.fullname" . }}-metrics
+    annotations:
+      prometheus.io/path: "/metrics"
+      prometheus.io/scheme: "http"
+      prometheus.io/port: "24231"
+      prometheus.io/scrape: "true"
+    labels:
+      app: {{ template "xray.name" . }}
+      component: {{ template "xray.name" . }}
+      chart: {{ template "xray.chart" . }}
+      heritage: {{ .Release.Service }}
+      release: {{ .Values.global.prometheus.release_name }}
+      {{- with .Values.xray.labels }}
+  {{ toYaml . | indent 4 }}
+      {{- end }}
+  spec:
+    type: ClusterIP
+    ports:
+    - name: metrics
+      port: 24231
+      protocol: TCP
+    selector:
+      app: {{ template "xray.name" . }}
+      component: {{ template "xray.name" . }}
+  ---
+  apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    name: servicemonitor-{{ template "xray.name" . }}
+    labels:
+      metrics: jfrog
+      app: {{ template "xray.name" . }}
+      chart: {{ template "xray.chart" . }}
+      heritage: {{ .Release.Service }}
+      release: {{ .Values.global.prometheus.release_name }}
+  spec:
+    selector:
+      matchLabels:
+        app: {{ template "xray.name" . }}
+        component: {{ template "xray.name" . }}
+    endpoints:
+      - port: metrics
+        interval: 15s
+  ---
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: {{ template "xray.fullname" . }}-auth-metrics
+    annotations:
+      prometheus.io/path: "/xray/api/v1/metrics"
+      prometheus.io/scheme: "http"
+      prometheus.io/port: "24231"
+      prometheus.io/scrape: "true"
+    labels:
+      app: {{ template "xray.name" . }}-auth
+      component: {{ template "xray.name" . }}-auth
+      chart: {{ template "xray.chart" . }}
+      heritage: {{ .Release.Service }}
+      release: {{ .Values.global.prometheus.release_name }}
+      {{- with .Values.xray.labels }}
+  {{ toYaml . | indent 4 }}
+      {{- end }}
+  spec:
+    type: ClusterIP
+    ports:
+    - name: metrics
+      port: 24231
+      targetPort: 8082
+      protocol: TCP
+    selector:
+      app: {{ template "xray.name" . }}
+      component: {{ template "xray.name" . }}
+  ---
+  apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    name: servicemonitor-{{ template "xray.name" . }}-auth
+    labels:
+      metrics: jfrog
+      app: {{ template "xray.name" . }}
+      chart: {{ template "xray.chart" . }}
+      heritage: {{ .Release.Service }}
+      release: {{ .Values.global.prometheus.release_name }}
+  spec:
+    selector:
+      matchLabels:
+        app: {{ template "xray.name" . }}-auth
+        component: {{ template "xray.name" . }}-auth
+    endpoints:
+    - port: metrics
+      scheme: http
+      path: /xray/api/v1/metrics
+      interval: 15s
+      bearerTokenSecret:
+        key: token
+        name: jfrog-admin-token

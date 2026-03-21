@@ -1,0 +1,186 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /var/opt/jfrog/artifactory/log/promtail-positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: jfrog-rt-metrics
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: jfrog-rt-metrics
+          service: artifactory
+          __path__:
+            - /var/opt/jfrog/artifactory/log/artifactory-metrics.log
+            - /var/opt/jfrog/artifactory/log/observability-metrics.log
+
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<key>[\w]+)\s(?P<value>[+-]?(?:\d+(?:\.\d+)?(?:[Ee][+-]?\d+)?))\s(?P<ts>\d+)$'
+
+      - timestamp:
+          source: ts
+          format: Unix
+
+      - labels:
+          key:
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="jfrt_runtime_heap_freememory_bytes"}'
+          stages:
+            - metrics:
+                jfrt_runtime_heap_freememory_bytes:
+                  type: Gauge
+                  description: Heap Free Memory in Bytes
+                  source: value
+                  config:
+                    action: set
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="jfrt_runtime_heap_maxmemory_bytes"}'
+          stages:
+            - metrics:
+                jfrt_runtime_heap_maxmemory_bytes:
+                  type: Gauge
+                  description: Heap Max Memory in Bytes
+                  source: value
+                  config:
+                    action: set
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="jfrt_runtime_heap_totalmemory_bytes"}'
+          stages:
+            - metrics:
+                jfrt_runtime_heap_totalmemory_bytes:
+                  type: Gauge
+                  description: Heap Total Memory in Bytes
+                  source: value
+                  config:
+                    action: set
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="jfrt_runtime_heap_processors_total"}'
+          stages:
+            - metrics:
+                jfrt_runtime_heap_processors_total:
+                  type: Gauge
+                  description: Total Heap Processors
+                  source: value
+                  config:
+                    action: set
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="jfrt_db_connections_active_total"}'
+          stages:
+            - metrics:
+                jfrt_db_connections_active_total:
+                  type: Gauge
+                  description: Active DB Connections
+                  source: value
+                  config:
+                    action: set
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="jfrt_db_connections_idle_total"}'
+          stages:
+            - metrics:
+                jfrt_db_connections_idle_total:
+                  type: Gauge
+                  description: Idle DB Connections
+                  source: value
+                  config:
+                    action: set
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="jfrt_db_connections_max_active_total"}'
+          stages:
+            - metrics:
+                jfrt_db_connections_max_active_total:
+                  type: Gauge
+                  description: Max Active DB Connections
+                  source: value
+                  config:
+                    action: set
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="jfrt_db_connections_min_idle_total"}'
+          stages:
+            - metrics:
+                jfrt_db_connections_min_idle_total:
+                  type: Gauge
+                  description: Min Idle DB Connections
+                  source: value
+                  config:
+                    action: set
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="jfrt_storage_current_total_size_bytes"}'
+          stages:
+            - metrics:
+                jfrt_storage_current_total_size_bytes:
+                  type: Gauge
+                  description: Artifactory Storage in Bytes
+                  source: value
+                  config:
+                    action: set
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="app_disk_used_bytes"}'
+          stages:
+            - metrics:
+                app_disk_used_bytes:
+                  type: Gauge
+                  description: Application Disk Used in Bytes
+                  source: value
+                  config:
+                    action: set
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="app_disk_free_bytes"}'
+          stages:
+            - metrics:
+                app_disk_free_bytes:
+                  type: Gauge
+                  description: Application Disk Free in Bytes
+                  source: value
+                  config:
+                    action: set
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="sys_memory_used_bytes"}'
+          stages:
+            - metrics:
+                sys_memory_used_bytes:
+                  type: Gauge
+                  description: System Memory Used in Bytes
+                  source: value
+                  config:
+                    action: set
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="sys_memory_free_bytes"}'
+          stages:
+            - metrics:
+                sys_memory_free_bytes:
+                  type: Gauge
+                  description: System Memory Free in Bytes
+                  source: value
+                  config:
+                    action: set
+
+      - match:
+          selector: '{job="jfrog-rt-metrics", key="sys_cpu_ratio"}'
+          stages:
+            - metrics:
+                sys_cpu_ratio:
+                  type: Gauge
+                  description: System CPU Ratio
+                  source: value
+                  config:
+                    action: set

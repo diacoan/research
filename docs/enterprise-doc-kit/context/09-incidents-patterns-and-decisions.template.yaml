@@ -1,0 +1,25 @@
+incidents_patterns_and_decisions:
+  known_incidents:
+    - date: ""
+      title: ""
+      impacted_components: []
+      summary: ""
+      root_cause: ""
+      remediation: ""
+      lessons_learned: []
+  recurring_patterns:
+    - pattern: ""
+      signal: ""
+      likely_causes: []
+      current_response: ""
+  accepted_tradeoffs:
+    - ""
+  rejected_options:
+    - option: ""
+      reason: ""
+  current_hypotheses:
+    - hypothesis: ""
+      evidence: []
+      missing_validation: []
+  mandatory_open_questions:
+    - ""

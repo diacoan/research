@@ -1,0 +1,47 @@
+gke_cluster_context:
+  cluster_identity:
+    project_id: ""
+    cluster_name: ""
+    region: ""
+    mode: "standard"
+    release_channel: ""
+    kubernetes_version: ""
+  node_pools:
+    - name: ""
+      purpose: ""
+      machine_type: ""
+      min_nodes: 0
+      max_nodes: 0
+      current_nodes: 0
+      taints: []
+      labels: {}
+      autoscaling_enabled: false
+  allocatable_and_headroom:
+    known_allocatable_constraints: []
+    daemonset_tax_notes: []
+    sidecar_tax_notes: []
+  scheduling_and_isolation:
+    affinity_rules: []
+    anti_affinity_rules: []
+    topology_spread_constraints: []
+    dedicated_node_pools_for_stateful_workloads: false
+  cluster_addons_and_overhead:
+    daemonsets:
+      - name: ""
+        namespaces: []
+        purpose: ""
+    additional_exporters:
+      - ""
+    logging_agents: []
+    security_agents: []
+  known_capacity_signals:
+    failed_scheduling_patterns: []
+    eviction_patterns: []
+    oom_patterns: []
+    autoscaler_errors: []
+  monitoring_sources:
+    metrics_explorer_dashboards: []
+    logs_explorer_queries: []
+    custom_dashboards: []
+  open_questions:
+    - ""

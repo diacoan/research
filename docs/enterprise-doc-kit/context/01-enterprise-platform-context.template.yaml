@@ -1,0 +1,42 @@
+enterprise_platform_context:
+  business_criticality:
+    classification: ""
+    customer_impact_if_degraded: ""
+    peak_business_windows: []
+    regulated_or_audited: false
+    compliance_notes: []
+  environment_scope:
+    environment_type: ""
+    regions: []
+    primary_region: ""
+    disaster_recovery_region: ""
+    rto_target: ""
+    rpo_target: ""
+  product_scope:
+    artifactory_enabled: true
+    xray_enabled: false
+    distribution_enabled: false
+    access_separated: true
+    metadata_separated: true
+    mission_critical_user_flows:
+      - ""
+  operational_model:
+    support_hours: ""
+    oncall_model: ""
+    maintenance_windows: []
+    release_freeze_periods: []
+    required_approvals_for_changes: []
+  ownership:
+    artifactory_team: ""
+    gke_team: ""
+    database_team: ""
+    storage_team: ""
+    observability_team: ""
+    security_team: ""
+  enterprise_constraints:
+    cost_constraints: []
+    architecture_constraints: []
+    tooling_constraints: []
+    vendor_constraints: []
+  open_questions:
+    - ""

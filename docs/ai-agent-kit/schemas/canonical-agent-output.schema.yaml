@@ -1,0 +1,430 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://example.local/schemas/artifactory-operational-agent-output.schema.yaml"
+title: "Artifactory Operational Agent Output"
+description: "Canonical output contract for AI agents used in Artifactory operational analysis, triage, and decision support."
+type: object
+additionalProperties: false
+required:
+  - schema_version
+  - analysis_metadata
+  - input_scope
+  - summary
+  - observations
+  - hypotheses
+  - bottleneck_assessment
+  - impact_assessment
+  - recommended_actions
+  - open_questions
+  - references_used
+properties:
+  schema_version:
+    type: string
+    const: "1.0.0"
+  analysis_metadata:
+    type: object
+    additionalProperties: false
+    required:
+      - analysis_id
+      - timestamp_utc
+      - agent_role
+      - analysis_mode
+      - environment_name
+      - primary_time_window
+    properties:
+      analysis_id:
+        type: string
+      timestamp_utc:
+        type: string
+        format: date-time
+      agent_role:
+        type: string
+        enum:
+          - orchestrator
+          - context-loader
+          - telemetry-normalizer
+          - symptom-classifier
+          - domain-specialist
+          - cross-domain-correlator
+          - decision-runbook
+      analysis_mode:
+        type: string
+        enum:
+          - ad-hoc-question
+          - triage
+          - incident
+          - capacity-planning
+          - post-incident-review
+      environment_name:
+        type: string
+      domain_name:
+        type:
+          - string
+          - "null"
+      primary_time_window:
+        type: string
+      secondary_time_windows:
+        type: array
+        items:
+          type: string
+  input_scope:
+    type: object
+    additionalProperties: false
+    required:
+      - question_or_goal
+      - services_in_scope
+      - telemetry_sources
+      - enterprise_context_files
+      - reference_documents
+    properties:
+      question_or_goal:
+        type: string
+      services_in_scope:
+        type: array
+        items:
+          type: string
+      namespaces_in_scope:
+        type: array
+        items:
+          type: string
+      repositories_in_scope:
+        type: array
+        items:
+          type: string
+      remote_hosts_in_scope:
+        type: array
+        items:
+          type: string
+      telemetry_sources:
+        type: array
+        items:
+          type: string
+      enterprise_context_files:
+        type: array
+        items:
+          type: string
+      reference_documents:
+        type: array
+        items:
+          type: string
+  summary:
+    type: object
+    additionalProperties: false
+    required:
+      - headline
+      - status
+      - confidence
+    properties:
+      headline:
+        type: string
+      status:
+        type: string
+        enum:
+          - context-only
+          - observing
+          - provisional
+          - likely
+          - confirmed
+          - blocked-by-missing-data
+      confidence:
+        type: string
+        enum:
+          - low
+          - medium
+          - high
+      primary_symptom:
+        type:
+          - string
+          - "null"
+      working_theory:
+        type:
+          - string
+          - "null"
+  observations:
+    type: array
+    items:
+      $ref: "#/$defs/observation"
+  hypotheses:
+    type: array
+    items:
+      $ref: "#/$defs/hypothesis"
+  bottleneck_assessment:
+    type: array
+    items:
+      $ref: "#/$defs/bottleneckCandidate"
+  impact_assessment:
+    type: object
+    additionalProperties: false
+    required:
+      - operability
+      - functionality
+      - performance
+    properties:
+      operability:
+        $ref: "#/$defs/impactBlock"
+      functionality:
+        $ref: "#/$defs/impactBlock"
+      performance:
+        $ref: "#/$defs/impactBlock"
+  recommended_actions:
+    type: object
+    additionalProperties: false
+    required:
+      - safe_now
+      - validate_next
+      - avoid_for_now
+      - escalation_targets
+    properties:
+      safe_now:
+        type: array
+        items:
+          $ref: "#/$defs/actionItem"
+      validate_next:
+        type: array
+        items:
+          $ref: "#/$defs/actionItem"
+      low_risk_changes:
+        type: array
+        items:
+          $ref: "#/$defs/actionItem"
+      avoid_for_now:
+        type: array
+        items:
+          $ref: "#/$defs/actionItem"
+      escalation_targets:
+        type: array
+        items:
+          type: string
+  open_questions:
+    type: array
+    items:
+      type: string
+  references_used:
+    type: array
+    items:
+      $ref: "#/$defs/referenceItem"
+$defs:
+  observation:
+    type: object
+    additionalProperties: false
+    required:
+      - id
+      - statement
+      - statement_type
+      - domain
+      - source_type
+      - source_ref
+      - scope
+      - window
+      - interpretation
+      - confidence
+    properties:
+      id:
+        type: string
+      statement:
+        type: string
+      statement_type:
+        type: string
+        enum:
+          - observed_fact
+          - documented_fact
+          - operational_inference
+          - assumption
+      domain:
+        type: string
+        enum:
+          - cross-domain
+          - context
+          - app-jvm
+          - db
+          - cloudsql-proxy
+          - storage-gcs
+          - local-disk
+          - gke-capacity
+          - remote-repos
+          - xray
+          - observability
+      source_type:
+        type: string
+        enum:
+          - metric
+          - log
+          - event
+          - config
+          - document
+          - context-file
+          - derived
+      source_ref:
+        type: string
+      scope:
+        type: string
+      window:
+        type: string
+      value_summary:
+        type:
+          - string
+          - "null"
+      interpretation:
+        type: string
+      confidence:
+        type: string
+        enum:
+          - low
+          - medium
+          - high
+  hypothesis:
+    type: object
+    additionalProperties: false
+    required:
+      - id
+      - hypothesis
+      - domain
+      - status
+      - rationale
+      - confidence
+    properties:
+      id:
+        type: string
+      hypothesis:
+        type: string
+      domain:
+        type: string
+      status:
+        type: string
+        enum:
+          - candidate
+          - likely
+          - rejected
+          - confirmed
+      rationale:
+        type: string
+      supporting_observation_ids:
+        type: array
+        items:
+          type: string
+      conflicting_observation_ids:
+        type: array
+        items:
+          type: string
+      confidence:
+        type: string
+        enum:
+          - low
+          - medium
+          - high
+  bottleneckCandidate:
+    type: object
+    additionalProperties: false
+    required:
+      - domain
+      - bottleneck_type
+      - scope
+      - status
+      - why_likely
+      - why_not_alternatives
+      - confidence
+    properties:
+      domain:
+        type: string
+      bottleneck_type:
+        type: string
+      scope:
+        type: string
+      status:
+        type: string
+        enum:
+          - candidate
+          - likely
+          - dominant
+          - rejected
+      why_likely:
+        type: string
+      why_not_alternatives:
+        type: array
+        items:
+          type: string
+      supporting_hypothesis_ids:
+        type: array
+        items:
+          type: string
+      impacted_components:
+        type: array
+        items:
+          type: string
+      confidence:
+        type: string
+        enum:
+          - low
+          - medium
+          - high
+  impactBlock:
+    type: object
+    additionalProperties: false
+    required:
+      - severity
+      - narrative
+    properties:
+      severity:
+        type: string
+        enum:
+          - none
+          - low
+          - medium
+          - high
+          - critical
+      narrative:
+        type: string
+      affected_flows:
+        type: array
+        items:
+          type: string
+  actionItem:
+    type: object
+    additionalProperties: false
+    required:
+      - action
+      - rationale
+    properties:
+      action:
+        type: string
+      rationale:
+        type: string
+      owner:
+        type:
+          - string
+          - "null"
+      success_signal:
+        type:
+          - string
+          - "null"
+      risk_level:
+        type:
+          - string
+          - "null"
+        enum:
+          - low
+          - medium
+          - high
+          - null
+  referenceItem:
+    type: object
+    additionalProperties: false
+    required:
+      - kind
+      - ref
+      - purpose
+    properties:
+      kind:
+        type: string
+        enum:
+          - local-doc
+          - context-file
+          - chat-context
+          - dashboard
+          - alert
+          - metric-query
+          - log-query
+          - runtime-output
+      ref:
+        type: string
+      purpose:
+        type: string

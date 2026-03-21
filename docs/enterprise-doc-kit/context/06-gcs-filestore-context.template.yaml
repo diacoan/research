@@ -1,0 +1,49 @@
+gcs_filestore_context:
+  bucket_identity:
+    project_id: ""
+    bucket_name: ""
+    location: ""
+    location_type: ""
+    storage_class: ""
+    path_prefix: ""
+  protection_and_lifecycle:
+    versioning_enabled: false
+    soft_delete_enabled: false
+    retention_policy: ""
+    lifecycle_rules: []
+    object_hold_usage: ""
+  logging_and_audit:
+    access_logs_enabled: false
+    access_log_bucket: ""
+    audit_logs_enabled: false
+    bucket_metrics_enabled: false
+  access_model:
+    use_instance_credentials: false
+    service_accounts: []
+    signed_url_redirect_enabled: false
+    cross_project_access: false
+  artifactory_integration:
+    persistence_type: "google-storage-v2-direct"
+    cache_provider_dir: ""
+    max_cache_size: ""
+    custom_binarystore_xml_used: false
+    advanced_provider_settings:
+      max_connections: ""
+      connection_timeout: ""
+  observed_behavior:
+    request_rate_patterns: []
+    object_size_patterns: []
+    egress_patterns: []
+    cache_hit_or_miss_patterns: []
+    local_disk_pressure_patterns: []
+    storage_error_patterns: []
+  enterprise_constraints:
+    data_residency_requirements: []
+    deletion_protection_requirements: []
+    cost_optimization_requirements: []
+  ownership:
+    bucket_owner: ""
+    lifecycle_owner: ""
+    incident_owner: ""
+  open_questions:
+    - ""

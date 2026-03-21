@@ -1,0 +1,58 @@
+cloudsql_proxy_context:
+  deployment_model:
+    mode: "sidecar"
+    injected_by: ""
+    container_name: "cloud-sql-proxy"
+    image: ""
+    version_tag: ""
+  runtime_args:
+    instance_connection_name: ""
+    port: 5432
+    private_ip: false
+    structured_logs: false
+    prometheus_enabled: false
+    telemetry_project: ""
+    telemetry_prefix: ""
+    run_connection_test: false
+    debug_logs_default: false
+    admin_port_enabled: false
+  resources:
+    requests_cpu: ""
+    requests_memory: ""
+    limits_cpu: ""
+    limits_memory: ""
+  placement:
+    same_pod_as:
+      - "artifactory"
+    node_pools: []
+    anti_affinity_or_spread_rules: []
+  artifactory_pool_mapping:
+    services_using_this_proxy:
+      - "artifactory"
+    calculated_c_cfg: ""
+    notes_on_pool_sharing: []
+  observed_proxy_metrics:
+    open_connections_p95: ""
+    open_connections_peak: ""
+    dial_latency_p95_ms: ""
+    dial_latency_peak_ms: ""
+    dial_failure_patterns: []
+    refresh_failure_patterns: []
+    cpu_p95_cores: ""
+    cpu_peak_cores: ""
+    memory_p95_mib: ""
+    memory_peak_mib: ""
+    restart_patterns: []
+  derived_resource_model_inputs:
+    m_base_mib: ""
+    m_per_connection_mib: ""
+    residency_ratio_estimate: ""
+    churn_assessment: ""
+  known_failure_patterns:
+    - ""
+  ownership:
+    deployment_owner: ""
+    tuning_owner: ""
+    observability_owner: ""
+  open_questions:
+    - ""

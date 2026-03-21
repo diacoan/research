@@ -1,0 +1,37 @@
+document_profile:
+  environment_name: ""
+  company_or_program: ""
+  target_language: "English"
+  target_audience_primary: "Platform Engineering"
+  target_audience_secondary: []
+  document_family:
+    - "cloudsql"
+    - "cloudsql-proxy"
+    - "gcs-filestore"
+    - "gke-sizing"
+    - "artifactory-app-sizing"
+  output_style:
+    keep_same_template_as_repo_docs: true
+    include_quick_check_table: true
+    include_decision_matrix: true
+    include_open_questions_section: true
+    include_reference_section: true
+    require_operational_inference_marking: true
+  source_of_truth_rules:
+    prefer_enterprise_context_over_generic_defaults: true
+    keep_repo_docs_as_conceptual_reference: true
+    keep_helm_chart_as_configuration_reference: true
+    do_not_assume_runtime_state_from_chart_alone: true
+  non_goals:
+    - ""
+  naming:
+    output_prefix: ""
+    output_directory: "../generated"
+  reviewers:
+    platform_owner: ""
+    database_owner: ""
+    storage_owner: ""
+    sre_owner: ""
+    security_owner: ""
+  known_unknowns:
+    - ""

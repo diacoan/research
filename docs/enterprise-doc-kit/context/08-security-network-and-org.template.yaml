@@ -1,0 +1,30 @@
+security_network_and_org_context:
+  network_topology:
+    vpc_design: ""
+    subnets: []
+    nat_or_egress_design: ""
+    firewall_constraints: []
+    proxy_constraints: []
+    private_service_connect_usage: ""
+  security_controls:
+    workload_identity_used: false
+    secret_management_model: ""
+    certificate_rotation_model: ""
+    allowed_debugging_paths: []
+    restricted_operations: []
+  organizational_constraints:
+    change_advisory_requirements: []
+    ownership_boundaries: []
+    escalation_paths: []
+    documentation_requirements: []
+  risk_tolerance:
+    performance_risk_tolerance: ""
+    availability_risk_tolerance: ""
+    cost_risk_tolerance: ""
+  approval_requirements:
+    node_pool_changes: []
+    cloudsql_changes: []
+    gcs_changes: []
+    artifactory_pool_changes: []
+  open_questions:
+    - ""

@@ -1,0 +1,36 @@
+observability_and_slos:
+  slis:
+    - name: ""
+      description: ""
+      source: ""
+  slos:
+    - name: ""
+      target: ""
+      measurement_window: ""
+      burn_alert_policy: ""
+  dashboards:
+    artifactory_dashboards: []
+    gke_dashboards: []
+    cloudsql_dashboards: []
+    gcs_dashboards: []
+  metrics_availability:
+    artifactory_openmetrics_enabled: false
+    proxy_telemetry_enabled: false
+    cloudsql_query_insights_enabled: false
+    gcs_bucket_metrics_enabled: false
+    metrics_retention_notes: []
+  logs_availability:
+    application_logs: []
+    proxy_logs: []
+    cluster_logs: []
+    cloudsql_logs: []
+    gcs_audit_logs: []
+  current_alerts:
+    - name: ""
+      source: ""
+      severity: ""
+      purpose: ""
+  blind_spots:
+    - ""
+  open_questions:
+    - ""

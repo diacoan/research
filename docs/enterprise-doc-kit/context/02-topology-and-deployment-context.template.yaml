@@ -1,0 +1,51 @@
+topology_and_deployment_context:
+  artifactory_topology:
+    deployment_model: "full-primary-ha"
+    artifactory_primary_replicas: 0
+    artifactory_nginx_replicas: 0
+    split_services_to_containers: false
+    services_running_in_primary_pod:
+      - "artifactory"
+      - "access"
+      - "metadata"
+    additional_jfrog_products:
+      xray:
+        enabled: false
+        server_replicas: 0
+        rabbitmq_replicas: 0
+      distribution:
+        enabled: false
+        replicas: 0
+      other_products: []
+  supporting_workloads:
+    observability_stack:
+      prometheus_enabled: false
+      grafana_enabled: false
+      exporters: []
+    sidecars_per_primary:
+      - name: "cloud-sql-proxy"
+        enabled: false
+      - name: "promtail"
+        enabled: false
+    additional_platform_workloads:
+      - ""
+  ingress_and_proxying:
+    ingress_controller: ""
+    external_load_balancer: ""
+    service_mesh: ""
+    egress_proxy_components: []
+  deployment_method:
+    helm_chart_version: ""
+    custom_overlays: []
+    injection_mechanisms:
+      - ""
+    config_sources:
+      - "helm-values"
+      - "kustomize"
+      - "manual-manifests"
+  rollout_behavior:
+    scaling_pattern: ""
+    restart_pattern: ""
+    maintenance_rollout_pattern: ""
+  open_questions:
+    - ""

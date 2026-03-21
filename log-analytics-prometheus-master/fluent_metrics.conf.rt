@@ -1,0 +1,474 @@
+# METRICS SEGMENT - BEGIN
+<source>
+  @type prometheus
+</source>
+
+<source>
+  @type tail
+  @id artifactory_metrics_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/artifactory-metrics.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/artifactory-metrics.log.pos"
+  tag jfrog.metrics.rt
+  read_from_head true
+  refresh_interval 10
+  follow_inodes true
+  skip_refresh_on_startup true
+  read_bytes_limit_per_second 104857600
+  <parse>
+    @type none
+  </parse>
+</source>
+<source>
+  @type tail
+  @id observability_metrics_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/observability-metrics.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/observability-metrics.log.pos"
+  tag jfrog.metrics.rt
+  read_from_head true
+  refresh_interval 10
+  follow_inodes true
+  skip_refresh_on_startup true
+  read_bytes_limit_per_second 104857600
+  <parse>
+    @type none
+  </parse>
+</source>
+
+<filter jfrog.metrics.rt>
+  @type parser
+  key_name message
+  <parse>
+    @type regexp
+    expression ^(?<key>[\w]+)\ (?<value>[[+-]?\d(\.\d+)?[Ee][+-]?\d+]+)\ (?<timestamp>[\d]+)$
+    time_type string
+    time_key timestamp
+    time_format %s
+  </parse>
+  emit_invalid_record_to_error false
+</filter>
+
+<filter jfrog.metrics.rt>
+  @type record_transformer
+  enable_ruby true
+  renew_record false
+  <record>
+    ${record["key"]} ${if record["value"]["."] then record["value"].to_f else record["value"].to_i end}
+  </record>
+</filter>
+
+<filter jfrog.metrics.rt>
+  @type prometheus
+
+  <metric>
+    name jfrt_runtime_heap_freememory_bytes
+    desc Heap Free Memory in Bytes
+    type gauge
+    key jfrt_runtime_heap_freememory_bytes
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+  <metric>
+    name jfrt_runtime_heap_maxmemory_bytes
+    desc Heap Max Memory in Bytes
+    type gauge
+    key jfrt_runtime_heap_maxmemory_bytes
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+  <metric>
+    name jfrt_runtime_heap_totalmemory_bytes
+    desc Heap Total Memory in Bytes
+    type gauge
+    key jfrt_runtime_heap_totalmemory_bytes
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+  <metric>
+    name jfrt_runtime_heap_processors_total
+    desc Total Heap Processors
+    type gauge
+    key jfrt_runtime_heap_processors_total
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+  <metric>
+    name jfrt_db_connections_active_total
+    desc Active DB Connections
+    type gauge
+    key jfrt_db_connections_active_total
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+  <metric>
+    name jfrt_db_connections_idle_total
+    desc Idle DB Connections
+    type gauge
+    key jfrt_db_connections_idle_total
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+  <metric>
+    name jfrt_db_connections_max_active_total
+    desc Max Active DB Connections
+    type gauge
+    key jfrt_db_connections_max_active_total
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+  <metric>
+    name jfrt_db_connections_min_idle_total
+    desc Min Idle DB Connections
+    type gauge
+    key jfrt_db_connections_min_idle_total
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+  <metric>
+    name jfrt_storage_current_total_size_bytes
+    desc Artifactory Storage in Bytes
+    type gauge
+    key jfrt_storage_current_total_size_bytes
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+  <metric>
+    name app_disk_used_bytes
+    desc Application Disk Used in Bytes
+    type gauge
+    key app_disk_used_bytes
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+  <metric>
+    name app_disk_free_bytes
+    desc Application Disk Free in Bytes
+    type gauge
+    key app_disk_free_bytes
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+  <metric>
+    name sys_memory_used_bytes
+    desc System Memory Used in Bytes
+    type gauge
+    key sys_memory_used_bytes
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+  <metric>
+    name sys_memory_free_bytes
+    desc System Memory Free in Bytes
+    type gauge
+    key sys_memory_free_bytes
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+  <metric>
+    name sys_cpu_ratio
+    desc System CPU Ratio
+    type gauge
+    key sys_cpu_ratio
+    <labels>
+      agent fluentd
+      host ${hostname}
+      service artifactory
+    </labels>
+  </metric>
+
+</filter>
+
+# METRICS SEGMENT - END
+
+# LOG SEGMENT - BEGIN
+
+<source>
+  @type tail
+  @id access_service_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/access-service.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/access-service.log.pos"
+  tag jfrog.rt.access.service
+  <parse>
+    @type none
+  </parse>
+</source>
+<source>
+  @type tail
+  @id artifactory_service_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/artifactory-service.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/artifactory-service.log.pos"
+  tag jfrog.rt.artifactory.service
+  <parse>
+    @type none
+  </parse>
+</source>
+<source>
+  @type tail
+  @id frontend_service_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/frontend-service.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/frontend-service.log.pos"
+  tag jfrog.rt.frontend.service
+  <parse>
+    @type none
+  </parse>
+</source>
+<source>
+  @type tail
+  @id metadata_service_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/metadata-service.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/metadata-service.log.pos"
+  tag jfrog.rt.metadata.service
+  <parse>
+    @type none
+  </parse>
+</source>
+<source>
+  @type tail
+  @id router_service_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-service.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-service.log.pos"
+  tag jfrog.rt.router.service
+  <parse>
+    @type none
+  </parse>
+</source>
+# Strip out color codes then field extract the service fields
+<filter jfrog.rt.**.service>
+  @type record_transformer
+  enable_ruby true
+  <record>
+    message ${record["message"].gsub(/\e\[([;\d]+)?m/, '')}
+  </record>
+</filter>
+<filter jfrog.rt.**.service>
+  @type parser
+  key_name message
+  <parse>
+      @type multiline
+      format_firstline /\d{4}-\d{1,2}-\d{1,2}/
+      format1 /^(?<timestamp>[^ ]*) \[(?<service_type>[^\]]*)\] \[(?<log_level>[^\]]*)\] \[(?<trace_id>[^\]]*)\] \[(?<class_line_number>.*)\] \[(?<thread>.*)\] -(?<message>.*)$/
+      time_key timestamp
+      time_format %Y-%m-%dT%H:%M:%S.%LZ
+  </parse>
+  emit_invalid_record_to_error false
+</filter>
+# End Service Fields Extraction
+<source>
+  @type tail
+  @id router_traefik_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-traefik.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-traefik.log.pos"
+  tag jfrog.rt.router.traefik
+  <parse>
+      @type multiline
+      format_firstline /\d{4}-\d{1,2}-\d{1,2}/
+      format1 /^(?<timestamp>[^ ]*) \[(?<service_type>[^\]]*)\] \[(?<log_level>[^\]]*)\] \[(?<trace_id>[^\]]*)\] \[(?<class_line_number>.*)\] \[(?<thread>.*)\] - (?<message>.+)$/
+      time_key timestamp
+      time_format %Y-%m-%dT%H:%M:%S.%LZ
+  </parse>
+</source>
+
+<source>
+  @type tail
+  @id access_request_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/access-request.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/access-request.log.pos"
+  tag jfrog.rt.access.request
+  <parse>
+    @type regexp
+    expression /^(?<timestamp>[^\|]*)\|(?<trace_id>[^\|]*)\|(?<remote_address>[^\|]*)\|(?<username>[^\|]*)\|(?<request_method>[^\|]*)\|(?<request_url>[^\|]*)\|(?<return_status>[^\|]*)\|(?<request_content_length>[^\|]*)\|(?<response_content_length>[^\|]*)\|(?<request_duration>[^\|]*)\|(?<request_user_agent>.+)$/m
+    time_key timestamp
+    time_format %Y-%m-%dT%H:%M:%S.%LZ
+  </parse>
+</source>
+<source>
+  @type tail
+  @id artifactory_request_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/artifactory-request.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/artifactory-request.log.pos"
+  tag jfrog.rt.artifactory.request
+  <parse>
+    @type regexp
+    expression /^(?<timestamp>[^\|]*)\|(?<trace_id>[^\|]*)\|(?<remote_address>[^\|]*)\|(?<username>[^\|]*)\|(?<request_method>[^\|]*)\|(?<request_url>[^\|]*)\|(?<return_status>[^\|]*)\|(?<request_content_length>[^\|]*)\|(?<response_content_length>[^\|]*)\|(?<request_duration>[^\|]*)\|(?<request_user_agent>.+)$/m
+    time_key timestamp
+    time_type mixed
+    time_format %Y-%m-%dT%H:%M:%S.%LZ
+    time_format_fallbacks %Y-%m-%dT%H:%M:%SZ
+    types response_content_length:integer, request_content_length:integer, return_status_code:integer
+  </parse>
+  emit_invalid_record_to_error false
+</source>
+<filter jfrog.rt.artifactory.request>
+  @type record_transformer
+  enable_ruby true
+  <record>
+    user ${!record["username"].strip().start_with?("token") ? (record["username"].strip()) : ("")}
+    repo ${record["request_url"].strip().include?("/api/docker") && !record["request_url"].include?("/api/docker/null") && !record["request_url"].include?("/api/docker/v2") && !record["request_url"].include?("v2/token") ? (record["request_url"].strip())[/api\/docker\/(.+)\/(?:v2)/, 1] : ("")}
+    artifact ${record["request_url"].strip().include?("/api/docker") && !record["request_url"].include?("/api/docker/null") && !record["request_url"].include?("/api/docker/v2") && !record["request_url"].include?("v2/token") ? (record["request_url"].strip())[/v2\/(.+)\/(?:manifests|blobs)/, 1] : ("")}
+    docker_repo ${record["request_url"].strip().include?("/api/docker") && !record["request_url"].include?("/api/docker/null") && !record["request_url"].include?("/api/docker/v2") && !record["request_url"].include?("v2/token") ? (record["request_url"].strip())[/api\/docker\/(.+)\/(?:v2)/, 1] : ("")}
+    docker_image ${record["request_url"].strip().include?("/api/docker") && !record["request_url"].include?("/api/docker/null") && !record["request_url"].include?("/api/docker/v2") && !record["request_url"].include?("v2/token") ? (record["request_url"].strip())[/v2\/(.+)\/(?:manifests|blobs)/, 1] : ("")}
+    data_download ${record["response_content_length"] == -1 ? 0 : record["response_content_length"]}
+    data_upload ${record["request_content_length"] == -1 ? 0 : record["request_content_length"]}
+  </record>
+</filter>
+<source>
+  @type tail
+  @id frontend_request_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/frontend-request.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/frontend-request.log.pos"
+  tag jfrog.rt.frontend.request
+  <parse>
+    @type regexp
+    expression /^(?<timestamp>[^\|]*)\|(?<trace_id>[^\|]*)\|(?<remote_address>[^\|]*)\|(?<username>[^\|]*)\|(?<request_method>[^\|]*)\|(?<request_url>[^\|]*)\|(?<return_status>[^\|]*)\|(?<request_content_length>[^\|]*)\|(?<response_content_length>[^\|]*)\|(?<request_duration>[^\|]*)\|(?<request_user_agent>.+)$/m
+    time_key timestamp
+    time_format %Y-%m-%dT%H:%M:%S.%LZ
+  </parse>
+</source>
+<filter jfrog.rt.frontend.request>
+  @type record_transformer
+  enable_ruby true
+  <record>
+    user ${!record["username"].strip().start_with?("token") ? (record["username"].strip()) : ("")}
+  </record>
+</filter>
+<source>
+  @type tail
+  @id metadata_request_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/metadata-request.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/metadata-request.log.pos"
+  tag jfrog.rt.metadata.request
+  <parse>
+    @type regexp
+    expression /^(?<timestamp>[^\|]*)\|(?<trace_id>[^\|]*)\|(?<remote_address>[^\|]*)\|(?<username>[^\|]*)\|(?<request_method>[^\|]*)\|(?<request_url>[^\|]*)\|(?<return_status>[^\|]*)\|(?<request_content_length>[^\|]*)\|(?<response_content_length>[^\|]*)\|(?<request_duration>[^\|]*)\|(?<request_user_agent>.+)$/m
+    time_key timestamp
+    time_format %Y-%m-%dT%H:%M:%S.%LZ
+  </parse>
+</source>
+<filter jfrog.rt.metadata.request>
+  @type record_transformer
+  enable_ruby true
+  <record>
+    user ${!record["username"].strip().start_with?("token") ? (record["username"].strip()) : ("")}
+  </record>
+</filter>
+<source>
+  @type tail
+  @id router_request_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-request.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-request.log.pos"
+  tag jfrog.rt.router.request
+  <parse>
+    @type json
+    time_key time
+    time_format %Y-%m-%dT%H:%M:%SZ
+  </parse>
+</source>
+# example access logs:
+# 2024-04-09T22:47:56.186Z [4147ce79c667c62c ] [ACCEPTED LOGIN]   for client : jfmc@01fdq6vwvc110f0bsyy5cc1xxr / 127.0.0.1 [token]
+# 2024-04-09T22:48:09.057Z [23805d42fe9d707e] [ACCEPTED DOWNLOAD]   for client : jfmc@01fdq6vwvc110f0bsyy5cc1xxr / 127.0.0.1 [apiKey]
+# 2024-04-09T22:48:35.240Z [581d24eaf7913e4b] [DENIED LOGIN]   for client : NA / 198.145.32.100
+<source>
+  @type tail
+  @id artifactory_access_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/artifactory-access.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/artifactory-access.log.pos"
+  tag jfrog.rt.artifactory.access
+  <parse>
+    @type regexp
+    expression /^(?<timestamp>[^\s]*) \[(?<trace_id>[^\s\]]*)\s*\] \[(?<action_response>[^\]\r\n]*)\] (?<repo_path>[^\s]*)? *for client : *(?<username>[^\s]*) *\/ *(?<ip>[^\s]*)? ?(\[(?<token>[^\s]*)\])?$/m
+    time_key timestamp
+    time_format %Y-%m-%dT%H:%M:%S.%LZ
+  </parse>
+</source>
+<source>
+  @type tail
+  @id access_security_audit_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/access-security-audit.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/access-security-audit.log.pos"
+  tag jfrog.rt.access.audit
+  <parse>
+    @type regexp
+    expression /^(?<timestamp>[^\|]*)\|(?<token_id>[^\|]*)\|(?<user_ip>[^\|]*)\|(?<user>[^\|]*)\|(?<logged_principal>[^\|]*)\|(?<entity_name>[^\|]*)\|(?<event_type>[^\|]*)\|(?<event>[^\|]*)\|(?<data_changed>.*)$/m
+    time_key timestamp
+    time_format %Y-%m-%dT%H:%M:%S.%LZ
+  </parse>
+</source>
+
+# LOG SEGMENT - END
+
+# WHAT LOG IT WAS INTO THE JSON
+<filter jfrog.**>
+  @type record_transformer
+  <record>
+    hostname "#{Socket.gethostname}"
+    log_source ${tag}
+  </record>
+</filter>
+
+<match jfrog.metrics.**>
+  @type stdout
+</match>
+
+<match jfrog.rt.**>
+  @type loki
+  url "#{ENV['LOKI_URL']}"
+  flush_interval 1s
+  flush_at_shutdown true
+  buffer_chunk_limit 1m
+  line_format json
+  extra_labels {"agent":"fluentd", "job":"jfrtlogs", "service":"artifactory"}
+  <label>
+      filename
+  </label>
+</match>
