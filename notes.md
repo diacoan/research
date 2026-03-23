@@ -142,3 +142,23 @@ e.g. slowness for users
     3. if correlation_1 -> operational infered action
 
 
+--- considerand fisierele de chat contexts din cwd si fisierele din docs/ 
+genereaza fisiere de absrtact/overview pentru strategia de monitorizare, operare, decision making for proactive scaling
+
+
+
+ ----
+
+verifica-mi intelegerea"
+
+ pt un request de la un user se foloseste un tomcat thread.
+ acest tomcat thread se poate folosi de mai multe conexiuni/ MBeans, e.g.
+  - autentificare si autorizare : access -> database
+   - remote repository : outbound http conn to external registry
+   - OR download from local : check database for metadata -> check cache in cluster members -> connection to GCS bucket 
+   - OR Upload : database, GCS bucket
+
+   asadar, tomcat threads ar trebui sa fie cumva proportional cu ceilalti parametri (connections settings)
+
+   in environmenturi live, uneori esti nevoit sa ajustezi parametrii pentru optimizarea functionarii platformei. vreau sa inteleg foarte bine dependintele dintre ei si cum se tuneaza in cazul in care e nevoie, de exemplu, sa creasca unul dintre acestia. cum trebuie modificati restul?
+   

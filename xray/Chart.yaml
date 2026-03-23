@@ -1,0 +1,35 @@
+apiVersion: v2
+appVersion: 3.137.26
+dependencies:
+- condition: postgresql.enabled
+  name: postgresql
+  repository: https://charts.jfrog.io/
+  version: 15.5.20
+- condition: rabbitmq.enabled
+  name: rabbitmq
+  repository: https://charts.jfrog.io/
+  version: 15.4.1
+- condition: catalog.enabled
+  name: catalog
+  repository: https://charts.jfrog.io/
+  version: 101.30.13
+- condition: valkey.enabled
+  name: valkey
+  repository: https://charts.jfrog.io/
+  version: 3.0.16
+description: Universal component scan for security and license inventory and impact
+  analysis
+home: https://www.jfrog.com/xray/
+icon: https://raw.githubusercontent.com/jfrog/charts/master/stable/xray/logo/xray-logo.png
+keywords:
+- xray
+- jfrog
+kubeVersion: '>= 1.19.0-0'
+maintainers:
+- email: installers@jfrog.com
+  name: Chart Maintainers at JFrog
+name: xray
+sources:
+- https://github.com/jfrog/charts
+type: application
+version: 103.137.26
